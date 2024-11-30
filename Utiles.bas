@@ -131,7 +131,6 @@ End Sub
 Sub FormulasResultados(principio As String)
     Dim wsPrincipio As Worksheet
     Dim wsResultados As Worksheet
-    Dim i As Integer
     Dim filaInicioA As Integer, filaInicioAA As Integer
     Dim numFilas As Integer
     Dim fila As Integer, numTablas As Integer
@@ -147,35 +146,36 @@ Sub FormulasResultados(principio As String)
     
     ' define la primera columna para cada principio
     Select Case principio
-     Case "Perceptible"
-        columnaA = 4
-        columnaAA = 4
-    Case "Operable"
-        columnaA = 13
-        columnaAA = 15
-    Case "Comprensible"
-        columnaA = 27
-        columnaAA = 18
-    Case "Robusto"
-        columnaA = 32
-        columnaAA = 23
+        Case "Perceptible": columnaA = 4: columnaAA = 4
+        Case "Operable": columnaA = 13: columnaAA = 15
+        Case "Comprensible": columnaA = 27: columnaAA = 18
+        Case "Robusto": columnaA = 32: columnaAA = 23
     End Select
-    
-    'recorre las tablas del principio y llenar las celdas de resultados
-    numTablas = wsPrincipio.ListObjects.Count ' numero de tablas
 
-    'TABLAS A
     For Each tabla In wsPrincipio.ListObjects
+    ' =IF(OR(INDEX(tabla[Resultado], fila)="N/D", ISBLANK(INDEX(tabla[Resultado], fila))), "",
+    ' IF(INDEX(tabla[Resultado], fila)="pasa", "P",
+    ' IF(INDEX(tabla[Resultado], fila)="falla", "F",
+    ' IF(ISNA(INDEX(tabla[Resultado], fila)), INDEX(tabla[Resultado], fila), INDEX(tabla[Resultado], fila)))))
+   
+    'TABLAS A
         If tabla.HeaderRowRange.Cells(1, 2) = "A" Then
             filaInicioA = 8 ' resultados A empieza en la fila 8
             For fila = 1 To numFilas 'para cada fila de la muestra
-                formula = "=INDEX(" & tabla.Name & "[Resultado], " & fila & ")"
+                'formula = "=INDEX(" & tabla.Name & "[Resultado], " & fila & ")"
+                formula==IF(OR(INDEX(T3_3_2[Resultado], 1)="N/D", 
+       ISBLANK(INDEX(T3_3_2[Resultado], 1))), 
+"", IF(INDEX(T3_3_2[Resultado], 11)="falla", "F", 
+    IF(ISNA(INDEX(T3_3_2[Resultado], 1)), "N/A", 
+        INDEX(T3_3_2[Resultado], 1))))
+
+
                 wsResultados.Cells(filaInicioA + fila - 1, columnaA).FormulaR1C1 = formula
             Next fila
             columnaA = columnaA + 1
         End If
         
-        'TABLAS AA
+    'TABLAS AA
         If tabla.HeaderRowRange.Cells(1, 2) = "AA" Then
             filaInicioAA = filaInicioA + numFilas + 8
             For fila = 1 To numFilas 'para cada fila de la muestra
@@ -183,14 +183,8 @@ Sub FormulasResultados(principio As String)
                 wsResultados.Cells(filaInicioAA + fila - 1, columnaAA).FormulaR1C1 = formula
             Next fila
             columnaAA = columnaAA + 1
-        End If
-        
+        End If       
     Next tabla
-    
- 
-    ' Rellenar área inferior de Resultados (Tipo AA)
-    'For i = 1 To rangoTipoAA.Cells.Count
-    '    wsResultados.Cells(44 + i - 1, 1).Formula = "=Perceptible!D" & rangoTipoAA.Cells(i).Row
-    'Next i
+
 End Sub
 
